@@ -1,17 +1,14 @@
 package com.myself.vuandroidadsdk.okhttp;
 
 import com.myself.vuandroidadsdk.okhttp.https.HttpsUtils;
-import com.myself.vuandroidadsdk.okhttp.request.RequestParams;
+import com.myself.vuandroidadsdk.okhttp.response.CommonJsonCallback;
 
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
 import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -51,7 +48,7 @@ public class CommonOkHttpClient {
      * @param commCallback
      * @return  Call的实例
      */
-    public static Call sendRequest(Request request, Callback commCallback){
+    public static Call sendRequest(Request request, CommonJsonCallback commCallback){
         Call call = mOkHttpClient.newCall(request);
         call.enqueue(commCallback);
 
