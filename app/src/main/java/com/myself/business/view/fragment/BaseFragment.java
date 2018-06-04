@@ -1,5 +1,6 @@
 package com.myself.business.view.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 
 /**
@@ -7,5 +8,5 @@ import android.app.Fragment;
  */
 
 public class BaseFragment extends Fragment {
-
+    protected Activity mContext;
 }

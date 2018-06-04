@@ -1,6 +1,10 @@
 package com.myself.vuandroidadsdk.okhttp;
 
 import com.myself.vuandroidadsdk.okhttp.https.HttpsUtils;
+import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataHandle;
+import com.myself.vuandroidadsdk.okhttp.request.CommonRequest;
+import com.myself.vuandroidadsdk.okhttp.request.RequestParams;
+import com.myself.vuandroidadsdk.okhttp.response.CommonFileCallback;
 import com.myself.vuandroidadsdk.okhttp.response.CommonJsonCallback;
 
 import java.util.concurrent.TimeUnit;
@@ -44,14 +48,26 @@ public class CommonOkHttpClient {
 
     /**
      * 发送具体的Http/Https请求
-     * @param request
-     * @param commCallback
-     * @return  Call的实例
+     * @param url
+     * @param params
+     * @param handle
+     * @return
      */
-    public static Call sendRequest(Request request, CommonJsonCallback commCallback){
-        Call call = mOkHttpClient.newCall(request);
-        call.enqueue(commCallback);
+    public static Call get(String url, RequestParams params, DisposeDataHandle handle){
+        Call call = mOkHttpClient.newCall(CommonRequest.createGetRequest(url, params));
+        call.enqueue(new CommonJsonCallback(handle));
+        return call;
+    }
 
+    public static Call post(String url, RequestParams params, DisposeDataHandle handle){
+        Call call = mOkHttpClient.newCall(CommonRequest.createPostRequest(url, params));
+        call.enqueue(new CommonJsonCallback(handle));
+        return call;
+    }
+
+    public static Call downloadFile(Request request, DisposeDataHandle handle) {
+        Call call = mOkHttpClient.newCall(request);
+        call.enqueue(new CommonFileCallback(handle));
         return call;
     }
 }
