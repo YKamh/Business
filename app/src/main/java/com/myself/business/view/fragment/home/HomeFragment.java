@@ -3,6 +3,7 @@ package com.myself.business.view.fragment.home;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.myself.business.R;
+import com.myself.business.adapter.CourseAdapter;
+import com.myself.business.model.recommand.BaseRecommandModel;
 import com.myself.business.network.http.RequestCenter;
 import com.myself.business.view.fragment.BaseFragment;
 import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataListener;
@@ -21,6 +24,7 @@ import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataListener;
  */
 
 public class HomeFragment extends BaseFragment implements View.OnClickListener, AdapterView.OnItemClickListener{
+    private static final String TAG = HomeFragment.class.getName();
     /**
      * UI
      */
@@ -29,6 +33,12 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
     private TextView mCategroyView;
     private TextView mSearchView;
     private ImageView mLoadingView;
+
+    /**
+     * Data
+     */
+    private CourseAdapter mAdapter;
+    private BaseRecommandModel mRecommandModel;
 
     public HomeFragment() {
     }
@@ -67,14 +77,37 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
         RequestCenter.requestRecommandData(new DisposeDataListener() {
             @Override
             public void onSuccess(Object responseObj) {
-
+                Log.d(TAG, "onSuccess:" + responseObj.toString());
+                mRecommandModel = (BaseRecommandModel) responseObj;
+                showSuccessView();
             }
 
             @Override
             public void onFailure(Object reasonObj) {
-
+                Log.e(TAG, "onFailure:" + reasonObj.toString());
             }
         });
+    }
+
+    /**
+     * 请求成功执行的方法
+     */
+    private void showSuccessView() {
+        if (mRecommandModel.data.list != null && mRecommandModel.data.list.size() > 0){
+            mLoadingView.setVisibility(View.GONE);
+            mListView.setVisibility(View.VISIBLE);
+            mAdapter = new CourseAdapter(mContext, mRecommandModel.data.list);
+            mListView.setAdapter(mAdapter);
+        }else{
+            showErrorView();
+        }
+    }
+
+    /**
+     * 请求失败执行的方法
+     */
+    private void showErrorView() {
+
     }
 
     @Override

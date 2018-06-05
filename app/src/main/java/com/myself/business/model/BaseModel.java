@@ -1,4 +1,4 @@
-package com.myself.business.module;
+package com.myself.business.model;
 
 import java.io.Serializable;
 

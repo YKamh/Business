@@ -1,6 +1,6 @@
 package com.myself.business.network.http;
 
-import com.myself.business.module.recommand.BaseRecommandModel;
+import com.myself.business.model.recommand.BaseRecommandModel;
 import com.myself.vuandroidadsdk.okhttp.CommonOkHttpClient;
 import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataHandle;
 import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataListener;

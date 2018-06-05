@@ -1,6 +1,6 @@
-package com.myself.business.module.recommand;
+package com.myself.business.model.recommand;
 
-import com.myself.business.module.BaseModel;
+import com.myself.business.model.BaseModel;
 
 import java.util.ArrayList;
 
