@@ -10,11 +10,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.myself.business.R;
+import com.myself.business.activity.base.BaseActivity;
 import com.myself.business.view.fragment.home.HomeFragment;
 import com.myself.business.view.fragment.home.MessageFragment;
 import com.myself.business.view.fragment.home.MineFragment;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
+public class HomeActivity extends BaseActivity implements View.OnClickListener{
 
     /**
      * fragment相关

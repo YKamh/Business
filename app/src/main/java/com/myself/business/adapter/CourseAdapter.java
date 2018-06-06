@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.myself.business.R;
 import com.myself.business.adutil.Utils;
 import com.myself.business.model.recommand.RecommandBodyValue;
+import com.myself.business.util.Util;
 import com.myself.vuandroidadsdk.imageloader.ImageLoaderManager;
 
 import java.util.ArrayList;
@@ -123,6 +124,14 @@ public class CourseAdapter extends BaseAdapter {
                     mViewHolder.mLikeView = (TextView) convertView.findViewById(R.id.item_zan_view);
                     break;
                 case CARD_VIEW_PAGE:
+                    mViewHolder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.item_product_card_three_layout, parent, false);
+                    mViewHolder.mViewPager = (ViewPager) convertView.findViewById(R.id.pager);
+                    mViewHolder.mViewPager.setPageMargin(Utils.dip2px(mContext, 12));
+                    ArrayList<RecommandBodyValue> recommandBodyValues = Util.handleData(value);
+                    mViewHolder.mViewPager.setAdapter(new HotSalePagerAdapter(mContext, recommandBodyValues));
+                    //一开始ViewPager处于一个比较靠中间的Item项
+                    mViewHolder.mViewPager.setCurrentItem(recommandBodyValues.size() * 100);
                     break;
                 default:
                     break;
