@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.myself.business.R;
+import com.myself.business.adutil.Utils;
 import com.myself.business.model.recommand.RecommandBodyValue;
 import com.myself.vuandroidadsdk.imageloader.ImageLoaderManager;
 
@@ -110,6 +111,16 @@ public class CourseAdapter extends BaseAdapter {
                     mViewHolder.mProductLayout = (LinearLayout) convertView.findViewById(R.id.product_photo_layout);
                     break;
                 case CARD_MULTI_PIC:
+                    mViewHolder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.item_product_card_two_layout, parent, false);
+                    mViewHolder.mLogoView = (CircleImageView) convertView.findViewById(R.id.item_logo_view);
+                    mViewHolder.mTitleView = (TextView) convertView.findViewById(R.id.item_title_view);
+                    mViewHolder.mInfoView = (TextView) convertView.findViewById(R.id.item_info_view);
+                    mViewHolder.mFooterView = (TextView) convertView.findViewById(R.id.item_footer_view);
+                    mViewHolder.mProductView = (ImageView) convertView.findViewById(R.id.product_photo_view);
+                    mViewHolder.mPriceView = (TextView) convertView.findViewById(R.id.item_price_view);
+                    mViewHolder.mFromView = (TextView) convertView.findViewById(R.id.item_from_view);
+                    mViewHolder.mLikeView = (TextView) convertView.findViewById(R.id.item_zan_view);
                     break;
                 case CARD_VIEW_PAGE:
                     break;
@@ -121,7 +132,7 @@ public class CourseAdapter extends BaseAdapter {
             mViewHolder = (ViewHolder) convertView.getTag();
         }
         //开始绑定数据
-        switch (type){
+        switch (type) {
             case CARD_SIGNAL_PIC:
                 mViewHolder.mTitleView.setText(value.title);
                 mViewHolder.mInfoView.setText(value.info.concat(mContext.getString(R.string.tian_qian)));
@@ -132,8 +143,30 @@ public class CourseAdapter extends BaseAdapter {
                 mImageLoaderManager.displayImage(mViewHolder.mLogoView, value.logo);
                 mImageLoaderManager.displayImage(mViewHolder.mProductView, value.url.get(0));
                 break;
+            case CARD_VIEW_PAGE:
+                mViewHolder.mTitleView.setText(value.title);
+                mViewHolder.mInfoView.setText(value.info.concat(mContext.getString(R.string.tian_qian)));
+                mViewHolder.mFooterView.setText(value.text);
+                mViewHolder.mPriceView.setText(value.price);
+                mViewHolder.mFromView.setText(value.from);
+                mViewHolder.mLikeView.setText(mContext.getString(R.string.dian_zan).concat(value.zan));
+                mImageLoaderManager.displayImage(mViewHolder.mLogoView, value.logo);
+                mViewHolder.mProductLayout.removeAllViews();
+                for (String url : value.url) {
+                    mViewHolder.mProductLayout.addView(createImageView(url));
+                }
+                break;
         }
         return null;
+    }
+
+    private ImageView createImageView(String url){
+        ImageView imageView = new ImageView(mContext);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(Utils.dip2px(mContext, 100), ViewGroup.LayoutParams.MATCH_PARENT);
+        params.leftMargin = Utils.dip2px(mContext, 5);
+        imageView.setLayoutParams(params);
+        mImageLoaderManager.displayImage(imageView, url);
+        return imageView;
     }
 
     private static class ViewHolder {
