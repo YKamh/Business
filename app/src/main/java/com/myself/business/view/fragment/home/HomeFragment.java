@@ -17,6 +17,7 @@ import com.myself.business.adapter.CourseAdapter;
 import com.myself.business.model.recommand.BaseRecommandModel;
 import com.myself.business.network.http.RequestCenter;
 import com.myself.business.view.fragment.BaseFragment;
+import com.myself.business.view.home.HomeHeaderLayout;
 import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataListener;
 
 /**
@@ -96,6 +97,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
         if (mRecommandModel.data.list != null && mRecommandModel.data.list.size() > 0){
             mLoadingView.setVisibility(View.GONE);
             mListView.setVisibility(View.VISIBLE);
+            //为ListView添加头布局
+            mListView.addHeaderView(new HomeHeaderLayout(mContext, mRecommandModel.data.head));
             mAdapter = new CourseAdapter(mContext, mRecommandModel.data.list);
             mListView.setAdapter(mAdapter);
         }else{

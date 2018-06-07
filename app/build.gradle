@@ -29,5 +29,11 @@ dependencies {
     compile project(':vuandroidadsdk')
     //圆形ImageView
     compile 'de.hdodenhof:circleimageview:2.1.0'
+    //zxing
     implementation files('libs/zxing.jar')
+    //AutoScrollViewPager
+    compile('cn.trinea.android.view.autoscrollviewpager:android-auto-scroll-view-pager:1.1.2') {
+        exclude module: 'support-v4'
+    }
+    compile 'com.github.chrisbanes:PhotoView:2.1.3'
 }
