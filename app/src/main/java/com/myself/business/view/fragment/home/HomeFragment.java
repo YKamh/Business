@@ -1,5 +1,7 @@
 package com.myself.business.view.fragment.home;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,6 +20,7 @@ import com.myself.business.model.recommand.BaseRecommandModel;
 import com.myself.business.network.http.RequestCenter;
 import com.myself.business.view.fragment.BaseFragment;
 import com.myself.business.view.home.HomeHeaderLayout;
+import com.myself.business.zxing.app.CaptureActivity;
 import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataListener;
 
 /**
@@ -26,6 +29,8 @@ import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataListener;
 
 public class HomeFragment extends BaseFragment implements View.OnClickListener, AdapterView.OnItemClickListener{
     private static final String TAG = HomeFragment.class.getName();
+
+    private static final int REQUEST_QRCODE = 0x01;
     /**
      * UI
      */
@@ -115,11 +120,32 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener, 
 
     @Override
     public void onClick(View v) {
-
+        switch (v.getId()){
+            case R.id.qrcode_view:
+                Intent intent = new Intent(mContext, CaptureActivity.class);
+                startActivityForResult(intent, REQUEST_QRCODE);
+                break;
+            case R.id.category_view:
+                break;
+            case R.id.search_view:
+                break;
+        }
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case REQUEST_QRCODE:
+                if (resultCode == Activity.RESULT_OK){
+                    String code = data.getStringExtra("SCAN_RESULT");
+
+                }
+                break;
+        }
     }
 }

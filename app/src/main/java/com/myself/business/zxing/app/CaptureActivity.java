@@ -147,7 +147,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         Util.currentActivity = this;
         CameraManager.init(getApplication());
         viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
-
+        //找到我们定义的View
         mButtonBack = (Button) findViewById(R.id.button_back);
         mButtonBack.setOnClickListener(click);
         createBtn = (Button) findViewById(R.id.qrcode_btn);
@@ -177,7 +177,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     SurfaceHolder surfaceHolder;
 
     /**
-     * 闪光灯点击事件
+     * 自定义View的按键时间监听
      */
     private OnClickListener click = new OnClickListener() {
 
@@ -190,7 +190,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 if (!isFlash) {
                     CameraManager.get().turnLightOn();
                 } else {
-
                     CameraManager.get().turnLightOff();
                 }
                 isFlash = !isFlash;
@@ -521,10 +520,10 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             uri = data.getData();
+            //启动一个线程完成扫码工作
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-
                     Result result = scanningImage(uri);
                     if (result == null) {
                         Looper.prepare();
