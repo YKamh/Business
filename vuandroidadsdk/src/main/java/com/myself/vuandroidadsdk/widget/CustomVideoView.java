@@ -4,12 +4,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
+import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -95,6 +97,8 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
             }
         }
     };
+    private int mCurrentPlayState;
+    private boolean mIsPausedClicked;
 
     public CustomVideoView(Context context, ViewGroup parentContainer){
         super(context);
@@ -161,7 +165,23 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
      */
     @Override
     public void onCompletion(MediaPlayer mp) {
+        if (mListener != null){
+            mListener.onAdVideoComplete();
+        }
+        setIsComplete(true);
+        setIsPausedClicked(true);
+        playBack();//回到初始状态
+    }
 
+    private void playBack() {
+        setCurrentPlayState(STATE_PAUSING);
+        mHandler.removeCallbacksAndMessages(null);
+        if (mMediaPlayer != null){
+            mMediaPlayer.setOnSeekCompleteListener(null);
+            mMediaPlayer.seekTo(0);
+            mMediaPlayer.pause();
+        }
+        showPauseOrPlayView(false);
     }
 
     /**
@@ -173,7 +193,15 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
      */
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        return false;
+        this.playerState = STATE_IDLE;
+        if (mCurrentCount >= LOAD_TOTAL_COUNT){
+            if (mListener != null){
+                mListener.onAdVideoLoadFailed();
+            }
+            showPauseOrPlayView(false);
+        }
+        stop();
+        return true;
     }
 
     /**
@@ -182,7 +210,27 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
      */
     @Override
     public void onPrepared(MediaPlayer mp) {
+        mMediaPlayer = mp;
+        if (mMediaPlayer != null){
+            mMediaPlayer.setOnBufferingUpdateListener(this);
+            mCurrentCount = 0;
+            if (mListener != null){
+                mListener.onAdVideoComplete();
+            }
 
+            decideCanPlay();
+        }
+    }
+
+    private void decideCanPlay() {
+//        if (Utils.canAutoPlay(getContext(), SDKConstant.getCurrentSetting())
+//                && Utils.getVisiblePercent(mParentContainer) >=
+//                SDKConstant.VIDEO_SCREEN_PERCENT){
+//            //来回滑动页面时，只有 》 50
+//            resume();
+//        }else{
+//            pause();
+//        }
     }
 
     /**
@@ -193,7 +241,8 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
      */
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-
+        videoSurface = new Surface(surface);
+        load();
     }
 
     @Override
@@ -219,22 +268,56 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
     /**
      * 加载视频Url
      */
-    public void load(){
+    public void load() {
+        if (this.playerState != STATE_IDLE) {
+            return;
+        }
 
+        try {
+            showLoadingView();
+            setCurrentPlayState(STATE_IDLE);
+            checkMediaPlayer();//完成播放器的创建工作
+            mMediaPlayer.setDataSource(mUrl);
+            mMediaPlayer.prepareAsync();//异步开始加载视频
+        } catch (Exception e) {
+            stop();
+        }
     }
 
     /**
      * 暂停视频
      */
     public void pause(){
-
+        if (this.playerState != STATE_PLAYING){
+            return;
+        }
+        setCurrentPlayState(STATE_PAUSING);
+        if (isPlaying()){
+            mMediaPlayer.pause();
+        }
+        showPauseOrPlayView(false);
+        mHandler.removeCallbacksAndMessages(null);
     }
 
     /**
      * 恢复视频播放
      */
     public void resume(){
+        if (playerState != STATE_PAUSING){
+            return;
+        }
+        if (!isPlaying()){
+            entryResumeState();//置为播放中的状态值
+            showPauseOrPlayView(true);
+            mMediaPlayer.start();
+            mHandler.sendEmptyMessage(TIME_MSG);
+        }
+    }
 
+    private void entryResumeState() {
+        setCurrentPlayState(STATE_PLAYING);
+        setIsPausedClicked(false);
+        setIsComplete(false);
     }
 
     /**
@@ -248,7 +331,38 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
      * 视频处于停滞状态
      */
     public void stop(){
+        Log.d(TAG, "stop(): do stop");
+        if (this.mMediaPlayer != null){
+            this.mMediaPlayer.reset();
+            this.mMediaPlayer.setOnSeekCompleteListener(null);
+            this.mMediaPlayer.stop();
+            this.mMediaPlayer.release();
+            this.mMediaPlayer = null;
+        }
+        mHandler.removeCallbacksAndMessages(null);
+        setCurrentPlayState(STATE_IDLE);
 
+        //去重新Load
+        if (mCurrentCount < LOAD_TOTAL_COUNT){
+            mCurrentCount += 1;
+            load();
+        }else{
+            //停止重试
+            showPauseOrPlayView(false);
+        }
+    }
+
+    private void showPauseOrPlayView(boolean show) {
+        mFullBtn.setVisibility(show ? View.VISIBLE : View.GONE);
+        mMiniPlayButton.setVisibility(show ? View.GONE : View.VISIBLE);
+        mLoadingBar.clearAnimation();
+        mLoadingBar.setVisibility(View.GONE);
+        if (!show) {
+            mFrameView.setVisibility(View.VISIBLE);
+            loadFrameImage();
+        } else {
+            mFrameView.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -274,6 +388,20 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
 
     }
 
+    private void showLoadingView() {
+        mFullBtn.setVisibility(GONE);
+        mLoadingBar.setVisibility(VISIBLE);
+        AnimationDrawable anim = (AnimationDrawable) mLoadingBar.getBackground();
+        anim.start();
+        mMiniPlayButton.setVisibility(GONE);
+        mFrameView.setVisibility(GONE);
+        loadFrameImage();
+    }
+
+    private void loadFrameImage() {
+
+    }
+
     public void setListener(ADVideoPlayerListener listener){
         mListener = listener;
     }
@@ -288,6 +416,40 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
         return mMediaPlayer;
     }
 
+    public void setCurrentPlayState(int currentPlayState) {
+        mCurrentPlayState = currentPlayState;
+    }
+
+    public void setIsPausedClicked(boolean isPausedClicked) {
+        mIsPausedClicked = isPausedClicked;
+    }
+
+    public boolean isRealPause() {
+        return mIsRealPause;
+    }
+
+    public boolean isComplete() {
+        return mIsComplete;
+    }
+
+    public void setIsComplete(boolean isComplete) {
+        mIsComplete = isComplete;
+    }
+
+    @Override
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (visibility == VISIBLE && playerState == STATE_PAUSING) {
+            if (isRealPause() || isComplete()) {
+                pause();
+            } else {
+                decideCanPlay();
+            }
+        } else {
+            pause();
+        }
+    }
+
     /**
      * 监听锁屏事件的广播接收器
      */
@@ -300,9 +462,9 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
                     if (playerState == STATE_PAUSING) {
                         if (mIsRealPause) {
                             //手动点的暂停，回来后还暂停
-//                            pause();
+                            pause();
                         } else {
-//                            decideCanPlay();
+                            decideCanPlay();
                         }
                     }
                     break;
