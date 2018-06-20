@@ -3,6 +3,7 @@ package com.myself.vuandroidadsdk.widget;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
@@ -25,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.os.Handler;
 
 import com.myself.vuandroidadsdk.R;
+import com.myself.vuandroidadsdk.adutil.LogUtils;
 import com.myself.vuandroidadsdk.constant.SDKConstant;
 
 /**
@@ -68,6 +70,7 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
      * DATA
      */
     private String mUrl;//要加载的视频地址
+    private String mFrameURI;
     private boolean isMute;//是否静音
     private int mScreenWidth, mDestationHeight;
 
@@ -99,6 +102,8 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
     };
     private int mCurrentPlayState;
     private boolean mIsPausedClicked;
+
+    private ADFrameImageLoadListener mFrameLoadListener;
 
     public CustomVideoView(Context context, ViewGroup parentContainer){
         super(context);
@@ -157,6 +162,18 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {
 
+    }
+
+    public void setDataSource(String url) {
+        this.mUrl = url;
+    }
+
+    public void setFrameURI(String url) {
+        mFrameURI = url;
+    }
+
+    public void setFrameLoadListener(ADFrameImageLoadListener frameLoadListener) {
+        this.mFrameLoadListener = frameLoadListener;
     }
 
     /**
@@ -219,6 +236,53 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
             }
 
             decideCanPlay();
+        }
+    }
+
+    public int getDuration() {
+        if (mMediaPlayer != null) {
+            return mMediaPlayer.getDuration();
+        }
+        return 0;
+    }
+
+    public void setIsRealPause(boolean isRealPause) {
+        this.mIsRealPause = isRealPause;
+    }
+
+    public void destroy() {
+        LogUtils.d(TAG, " do destroy");
+        if (this.mMediaPlayer != null) {
+            this.mMediaPlayer.setOnSeekCompleteListener(null);
+            this.mMediaPlayer.stop();
+            this.mMediaPlayer.release();
+            this.mMediaPlayer = null;
+        }
+        setCurrentPlayState(STATE_IDLE);
+        mCurrentCount = 0;
+        setIsComplete(false);
+        setIsRealPause(false);
+        unRegisterBroadcastReceiver();
+        mHandler.removeCallbacksAndMessages(null); //release all message and runnable
+        showPauseView(false); //除了播放和loading外其余任何状态都显示pause
+    }
+
+    private void unRegisterBroadcastReceiver() {
+        if (mEventReceiver != null) {
+            getContext().unregisterReceiver(mEventReceiver);
+        }
+    }
+
+    private void showPauseView(boolean show) {
+        mFullBtn.setVisibility(show ? View.VISIBLE : View.GONE);
+        mMiniPlayButton.setVisibility(show ? View.GONE : View.VISIBLE);
+        mLoadingBar.clearAnimation();
+        mLoadingBar.setVisibility(View.GONE);
+        if (!show) {
+            mFrameView.setVisibility(View.VISIBLE);
+            loadFrameImage();
+        } else {
+            mFrameView.setVisibility(View.GONE);
         }
     }
 
@@ -385,7 +449,22 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
      * @param position
      */
     public void seekAndPause(int position){
-
+        if (this.playerState != STATE_PLAYING) {
+            return;
+        }
+        showPauseView(false);
+        setCurrentPlayState(STATE_PAUSING);
+        if (isPlaying()) {
+            mMediaPlayer.seekTo(position);
+            mMediaPlayer.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
+                @Override
+                public void onSeekComplete(MediaPlayer mp) {
+                    LogUtils.d(TAG, "do seek and pause");
+                    mMediaPlayer.pause();
+                    mHandler.removeCallbacksAndMessages(null);
+                }
+            });
+        }
     }
 
     private void showLoadingView() {
@@ -477,4 +556,17 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
         }
     }
 
+    public interface ADFrameImageLoadListener {
+
+        void onStartFrameLoad(String url, ImageLoaderListener listener);
+    }
+
+    public interface ImageLoaderListener {
+        /**
+         * 如果图片下载不成功，传null
+         *
+         * @param loadedImage
+         */
+        void onLoadingComplete(Bitmap loadedImage);
+    }
 }
