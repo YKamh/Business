@@ -38,10 +38,16 @@ public class Utils {
         return (int) (pxValue / scale);
     }
 
+    /**
+     * 获取传入控件在屏幕上显示的百分比
+     * @param pView
+     * @return
+     */
     public static int getVisiblePercent(View pView) {
         if (pView != null && pView.isShown()) {
             DisplayMetrics displayMetrics = pView.getContext().getResources().getDisplayMetrics();
             int displayWidth = displayMetrics.widthPixels;
+            //获取到当前View在屏幕中出现的一个矩形
             Rect rect = new Rect();
             pView.getGlobalVisibleRect(rect);
             if ((rect.top > 0) && (rect.left < displayWidth)) {

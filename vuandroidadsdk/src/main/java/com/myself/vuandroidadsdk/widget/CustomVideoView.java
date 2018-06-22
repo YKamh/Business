@@ -460,7 +460,6 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
                 @Override
                 public void onSeekComplete(MediaPlayer mp) {
                     LogUtils.d(TAG, "do seek and pause");
-                    mMediaPlayer.pause();
                     mHandler.removeCallbacksAndMessages(null);
                 }
             });

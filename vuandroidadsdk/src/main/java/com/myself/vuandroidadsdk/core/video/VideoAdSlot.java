@@ -15,6 +15,8 @@ import com.myself.vuandroidadsdk.report.ReportManager;
 import com.myself.vuandroidadsdk.widget.ADVideoPlayerListener;
 import com.myself.vuandroidadsdk.widget.CustomVideoView;
 
+import okhttp3.internal.Util;
+
 /**
  * Created by Kamh on 2018/6/14.
  * 广告业务逻辑层
@@ -55,6 +57,50 @@ public class VideoAdSlot implements ADVideoPlayerListener{
         paddingView.setLayoutParams(mVideoView.getLayoutParams());
         mParentView.addView(paddingView);
         mParentView.addView(mVideoView);
+    }
+
+    /**
+     *  实现滑入播放，滑出暂停功能
+     */
+    public void updateVideoInSrollView(){
+        int currentArea = Utils.getVisiblePercent(mParentView);
+        //如果View没有出现在屏幕上，不做任何处理
+        if (currentArea <= 0){
+            return;
+        }
+        //刚要滑入和滑出的异常情况处理
+        if (Math.abs(currentArea - lastArea) >= 100){
+            return;
+        }
+        //滑动没有超过屏幕50%时走入这些case
+        if (currentArea <= SDKConstant.VIDEO_SCREEN_PERCENT){
+            if (canPause){
+                pauseVideo(false);
+                canPause = false;//滑动事件的过滤
+            }
+            lastArea = 0;
+            mVideoView.setIsComplete(false);
+            mVideoView.setIsRealPause(false);
+            return;
+        }
+        //当视频进入真正的暂停状态是走此case
+        if (isRealPause() || isComplete()){
+            pauseVideo(false);
+            canPause = false;
+        }
+
+        //满足用户视频播放设置条件
+        if (Utils.canAutoPlay(mContext, AdParameters.getCurrentSetting()) || isPlaying()){
+            //真正去播放视频
+            lastArea = currentArea;
+            resumeVideo();
+            canPause = true;
+            mVideoView.setIsRealPause(false);
+        }else{
+            //不满足用户条件设置
+            pauseVideo(false);
+            mVideoView.setIsRealPause(true);
+        }
     }
 
     private boolean isPlaying() {
