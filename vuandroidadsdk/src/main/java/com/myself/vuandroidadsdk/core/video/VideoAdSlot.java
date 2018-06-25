@@ -14,6 +14,7 @@ import com.myself.vuandroidadsdk.module.AdValue;
 import com.myself.vuandroidadsdk.report.ReportManager;
 import com.myself.vuandroidadsdk.widget.ADVideoPlayerListener;
 import com.myself.vuandroidadsdk.widget.CustomVideoView;
+import com.myself.vuandroidadsdk.widget.VideoFullDialog;
 
 import okhttp3.internal.Util;
 
@@ -218,9 +219,27 @@ public class VideoAdSlot implements ADVideoPlayerListener{
 
     }
 
+    /**
+     * 实现从小屏到全屏播放的功能接口
+     */
     @Override
     public void onClickFullScreenBtn() {
+        mParentView.removeView(mVideoView);
+        //创建全屏播放Dialog
+        VideoFullDialog dialog = new VideoFullDialog(mContext, mVideoView, mXAdInstance);
+        dialog.setListener(new VideoFullDialog.FullToSmallListener() {
+            @Override
+            public void getCurrentPlayPosition(int position) {
+                //在全屏视屏播放的时候点击返回
 
+            }
+
+            @Override
+            public void playComplete() {
+
+            }
+        });
+        dialog.show();
     }
 
     @Override

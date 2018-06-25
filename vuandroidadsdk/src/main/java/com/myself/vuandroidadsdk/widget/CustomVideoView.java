@@ -466,6 +466,18 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
         }
     }
 
+    /**
+     * 设置静音
+     * @param mute true:静音  false:不静音
+     */
+    public void mute(boolean mute){
+        isMute = mute;
+        if (mMediaPlayer != null && this.mAudioManager != null){
+            float volume = isMute ? 0.0f : 1.0f;
+            mMediaPlayer.setVolume(volume, volume);
+        }
+    }
+
     private void showLoadingView() {
         mFullBtn.setVisibility(GONE);
         mLoadingBar.setVisibility(VISIBLE);
