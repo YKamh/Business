@@ -16,8 +16,6 @@ import com.myself.vuandroidadsdk.widget.ADVideoPlayerListener;
 import com.myself.vuandroidadsdk.widget.CustomVideoView;
 import com.myself.vuandroidadsdk.widget.VideoFullDialog;
 
-import okhttp3.internal.Util;
-
 /**
  * Created by Kamh on 2018/6/14.
  * 广告业务逻辑层
@@ -231,15 +229,45 @@ public class VideoAdSlot implements ADVideoPlayerListener{
             @Override
             public void getCurrentPlayPosition(int position) {
                 //在全屏视屏播放的时候点击返回
-
+                backToSmallMode(position);
             }
 
             @Override
             public void playComplete() {
-
+                //全屏播放完以后的事件回调
+                bigPlayComplete();
             }
         });
         dialog.show();
+    }
+
+    /**
+     * 全屏播放结束后的事件回调
+     */
+    private void bigPlayComplete() {
+        if (mVideoView.getParent() == null){
+            mParentView.addView(mVideoView);
+        }
+        mVideoView.isShowFullBtn(true);
+        mVideoView.mute(true);
+        mVideoView.setListener(this);
+        mVideoView.seekAndPause(0);
+        canPause = false;
+    }
+
+    /**
+     * 返回小屏模式的时候
+     * @param position
+     */
+    private void backToSmallMode(int position) {
+        if (mVideoView.getParent() == null){
+            mParentView.addView(mVideoView);
+        }
+
+        mVideoView.isShowFullBtn(true);//显示全屏按钮
+        mVideoView.mute(true);//小屏静音播放
+        mVideoView.setListener(this);//重新设置监听为我们的业务逻辑层
+        mVideoView.seekAndResume(position);//使跳到指定位置并播放
     }
 
     @Override

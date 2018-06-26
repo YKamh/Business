@@ -478,6 +478,11 @@ public class CustomVideoView extends RelativeLayout implements View.OnClickListe
         }
     }
 
+    public void isShowFullBtn(boolean isShow){
+        mFullBtn.setImageResource(isShow ? R.drawable.xadsdk_ad_mini : R.drawable.xadsdk_ad_mini_null);
+        mFullBtn.setVisibility(isShow ? VISIBLE : GONE);
+    }
+
     private void showLoadingView() {
         mFullBtn.setVisibility(GONE);
         mLoadingBar.setVisibility(VISIBLE);
