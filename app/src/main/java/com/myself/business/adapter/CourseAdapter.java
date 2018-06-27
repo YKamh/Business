@@ -1,6 +1,7 @@
 package com.myself.business.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,10 +12,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
 import com.myself.business.R;
 import com.myself.business.adutil.Utils;
 import com.myself.business.model.recommand.RecommandBodyValue;
 import com.myself.business.util.Util;
+import com.myself.vuandroidadsdk.activity.AdBrowserActivity;
+import com.myself.vuandroidadsdk.core.AdContextInterface;
+import com.myself.vuandroidadsdk.core.VideoAdContext;
 import com.myself.vuandroidadsdk.imageloader.ImageLoaderManager;
 
 import java.util.ArrayList;
@@ -40,7 +45,7 @@ public class CourseAdapter extends BaseAdapter {
     private Context mContext;
     private ArrayList<RecommandBodyValue> mList;
     private ViewHolder mViewHolder;
-    //    private VideoAdContext mVideoAdContext;
+    private VideoAdContext mVideoAdContext;
     private ImageLoaderManager mImageLoaderManager;
 
     /**
@@ -97,7 +102,25 @@ public class CourseAdapter extends BaseAdapter {
                     mViewHolder.mFooterView = (TextView) convertView.findViewById(R.id.item_footer_view);
                     mViewHolder.mShareView = (ImageView) convertView.findViewById(R.id.item_share_view);
                     //为对应布局创建播放器
+                    mVideoAdContext = new VideoAdContext(mViewHolder.mVideoContentLayout, JSON.toJSONString(value), null);
+                    mVideoAdContext.setAdResultListener(new AdContextInterface() {
+                        @Override
+                        public void onAdSuccess() {
 
+                        }
+
+                        @Override
+                        public void onAdFailed() {
+
+                        }
+
+                        @Override
+                        public void onClickVideo(String url) {
+                            Intent i = new Intent(mContext, AdBrowserActivity.class);
+                            i.putExtra(AdBrowserActivity.KEY_URL, url);
+                            mContext.startActivity(i);
+                        }
+                    });
                     break;
                 case CARD_SIGNAL_PIC:
                     mViewHolder = new ViewHolder();
@@ -167,6 +190,13 @@ public class CourseAdapter extends BaseAdapter {
                 break;
         }
         return null;
+    }
+
+
+    public void updateAdInScrollView(){
+        if (mVideoAdContext != null){
+            mVideoAdContext.updateAdInScrollView();
+        }
     }
 
     private ImageView createImageView(String url){

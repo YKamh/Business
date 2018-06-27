@@ -35,10 +35,10 @@ public class VideoAdSlot implements ADVideoPlayerListener{
     private boolean canPause = false;//是否可暂停标志位
     private int lastArea = 0; //防止将要滑入滑出时播放器的状态改变
 
-    public VideoAdSlot(AdValue adInstance, AdSDKSlotListener slotLitener, CustomVideoView.ADFrameImageLoadListener frameLoadListener) {
+    public VideoAdSlot(AdValue adInstance, AdSDKSlotListener slotListener, CustomVideoView.ADFrameImageLoadListener frameLoadListener) {
         mXAdInstance = adInstance;
-        mSlotListener = slotLitener;
-        mParentView = slotLitener.getAdParent();
+        mSlotListener = slotListener;
+        mParentView = slotListener.getAdParent();
         mContext = mParentView.getContext();
         initVideoView(frameLoadListener);
     }
@@ -224,7 +224,7 @@ public class VideoAdSlot implements ADVideoPlayerListener{
     public void onClickFullScreenBtn() {
         mParentView.removeView(mVideoView);
         //创建全屏播放Dialog
-        VideoFullDialog dialog = new VideoFullDialog(mContext, mVideoView, mXAdInstance);
+        VideoFullDialog dialog = new VideoFullDialog(mContext, mVideoView, mXAdInstance, mVideoView.getCurrentPosition());
         dialog.setListener(new VideoFullDialog.FullToSmallListener() {
             @Override
             public void getCurrentPlayPosition(int position) {
