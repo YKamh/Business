@@ -3,28 +3,27 @@
               android:layout_height="match_parent"
               android:background="@color/color_e3e3e3"
               android:orientation="vertical"
->
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-    >
+        android:layout_height="48dp">
+
         <ImageView
             android:id="@+id/back_view"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
-            android:background="@drawable/comment_back_normal"
-        />
+            android:background="@drawable/comment_back_normal"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/video_play_setting"
             android:textColor="@color/color_333333"
-            android:textSize="22sp"
-        />
+            android:textSize="22sp"/>
     </RelativeLayout>
 
     <TextView
@@ -35,13 +34,13 @@
         android:layout_marginTop="10dp"
         android:text="@string/video_setting"
         android:textColor="@color/color_666666"
-        android:textSize="16sp"
-    />
+        android:textSize="16sp"/>
+
     <RelativeLayout
         android:id="@+id/alway_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-    >
+        android:layout_height="wrap_content">
+
         <TextView
             android:id="@+id/alway_view"
             android:layout_width="match_parent"
@@ -52,8 +51,7 @@
             android:paddingTop="15dp"
             android:text="@string/auto_player_always"
             android:textColor="@color/color_333333"
-            android:textSize="18sp"
-        />
+            android:textSize="18sp"/>
 
         <CheckBox
             android:id="@+id/alway_check_box"
@@ -64,19 +62,19 @@
             android:layout_marginRight="10dp"
             android:button="@null"
             android:checked="false"
-            android:clickable="false"
-        />
+            android:clickable="false"/>
     </RelativeLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="@color/color_cccccc"
-    />
+        android:background="@color/color_cccccc"/>
+
     <RelativeLayout
         android:id="@+id/wifi_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-    >
+        android:layout_height="wrap_content">
+
         <TextView
             android:id="@+id/wifi_view"
             android:layout_width="match_parent"
@@ -87,8 +85,7 @@
             android:paddingTop="15dp"
             android:text="@string/auto_player_only_wifi"
             android:textColor="@color/color_333333"
-            android:textSize="18sp"
-        />
+            android:textSize="18sp"/>
 
         <CheckBox
             android:id="@+id/wifi_check_box"
@@ -99,19 +96,19 @@
             android:layout_marginRight="10dp"
             android:button="@null"
             android:checked="false"
-            android:clickable="false"
-        />
+            android:clickable="false"/>
     </RelativeLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="@color/color_cccccc"
-    />
+        android:background="@color/color_cccccc"/>
+
     <RelativeLayout
         android:id="@+id/close_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-    >
+        android:layout_height="wrap_content">
+
         <TextView
             android:id="@+id/close_view"
             android:layout_width="match_parent"
@@ -122,8 +119,7 @@
             android:paddingTop="15dp"
             android:text="@string/auto_player_never"
             android:textColor="@color/color_333333"
-            android:textSize="18sp"
-        />
+            android:textSize="18sp"/>
 
         <CheckBox
             android:id="@+id/close_check_box"
@@ -134,7 +130,6 @@
             android:layout_marginRight="10dp"
             android:button="@null"
             android:checked="false"
-            android:clickable="false"
-        />
+            android:clickable="false"/>
     </RelativeLayout>
 </LinearLayout>
