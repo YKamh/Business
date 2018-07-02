@@ -1,7 +1,9 @@
 package com.myself.business.network.http;
 
 import com.myself.business.model.recommand.BaseRecommandModel;
+import com.myself.business.model.update.UpdateModel;
 import com.myself.vuandroidadsdk.okhttp.CommonOkHttpClient;
+import com.myself.vuandroidadsdk.okhttp.HttpConstant;
 import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataHandle;
 import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataListener;
 import com.myself.vuandroidadsdk.okhttp.request.RequestParams;
@@ -23,5 +25,9 @@ public class RequestCenter {
      */
     public static void requestRecommandData(DisposeDataListener listener){
         RequestCenter.postRequest(HttpConstants.HOME_RECOMMAND, null, listener, BaseRecommandModel.class);
+    }
+
+    public static void checkVersion(DisposeDataListener listener){
+        RequestCenter.postRequest(HttpConstants.CHECK_UPDATE, null, listener, UpdateModel.class);
     }
 }
