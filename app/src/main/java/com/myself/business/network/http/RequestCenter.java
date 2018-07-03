@@ -2,6 +2,7 @@ package com.myself.business.network.http;
 
 import com.myself.business.model.recommand.BaseRecommandModel;
 import com.myself.business.model.update.UpdateModel;
+import com.myself.business.model.user.User;
 import com.myself.vuandroidadsdk.okhttp.CommonOkHttpClient;
 import com.myself.vuandroidadsdk.okhttp.HttpConstant;
 import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataHandle;
@@ -30,4 +31,12 @@ public class RequestCenter {
     public static void checkVersion(DisposeDataListener listener){
         RequestCenter.postRequest(HttpConstants.CHECK_UPDATE, null, listener, UpdateModel.class);
     }
+
+    public static void login(String userName, String password, DisposeDataListener listener){
+        RequestParams params = new RequestParams();
+        params.put("mb", userName);
+        params.put("pwd", password);
+        RequestCenter.postRequest(HttpConstants.LOGIN, params, listener, User.class);
+    }
+
 }

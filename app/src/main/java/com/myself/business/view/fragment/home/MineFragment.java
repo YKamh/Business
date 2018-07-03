@@ -1,20 +1,29 @@
 package com.myself.business.view.fragment.home;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.myself.business.R;
+import com.myself.business.activity.LoginActivity;
 import com.myself.business.activity.SettingActivity;
+import com.myself.business.manager.UserManager;
 import com.myself.business.model.update.UpdateModel;
 import com.myself.business.network.http.RequestCenter;
 import com.myself.business.service.update.UpdateService;
 import com.myself.business.util.Util;
 import com.myself.business.view.CommonDialog;
 import com.myself.business.view.fragment.BaseFragment;
+import com.myself.vuandroidadsdk.adutil.ImageLoaderUtil;
 import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataListener;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -38,10 +47,29 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private TextView mQrCodeView;
     private TextView mUpdateView;
 
+    private LoginBroadcastReceiver mReceiver = new LoginBroadcastReceiver();;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = getActivity();
+        registerBroadcast();
+    }
+
+    private void registerBroadcast() {
+        IntentFilter intentFilter = new IntentFilter(LoginActivity.LOGIN_ACTION);
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(mReceiver, intentFilter);
+    }
+
+    private void unregisterBroadcast(){
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        mContentView = inflater.inflate(R.layout.fragment_mine_layout, null, false);
         initView();
+        return mContentView;
     }
 
     private void initView() {
@@ -77,11 +105,24 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
             case R.id.update_view:
                 checkVersion();
                 break;
+            case R.id.login_view:
+                if (!UserManager.getInstance().hasLogined()){
+                    toLogin();
+                }
             default:
                 break;
         }
     }
 
+    /**
+     * 去登录页面
+     */
+    private void toLogin() {
+        Intent intent = new Intent(mContext, LoginActivity.class);
+        mContext.startActivity(intent);
+    }
+
+    //发送版本检测请求
     private void checkVersion(){
         RequestCenter.checkVersion(new DisposeDataListener() {
             @Override
@@ -108,5 +149,31 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
             }
         });
+    }
+
+    /**
+     * 自定义广播接收器，处理登录广播
+     */
+    private class LoginBroadcastReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (UserManager.getInstance().hasLogined()) {
+                //更新我们的fragment
+                if (mLoginedLayout.getVisibility() == View.GONE) {
+                    mLoginLayout.setVisibility(View.GONE);
+                    mLoginedLayout.setVisibility(View.VISIBLE);
+                    mUserNameView.setText(UserManager.getInstance().getUser().data.name);
+                    mTickView.setText(UserManager.getInstance().getUser().data.tick);
+                    ImageLoaderUtil.getInstance(mContext).displayImage(mPhotoView, UserManager.getInstance().getUser().data.photoUrl);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterBroadcast();
     }
 }
