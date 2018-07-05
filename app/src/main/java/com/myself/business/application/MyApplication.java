@@ -2,6 +2,8 @@ package com.myself.business.application;
 
 import android.app.Application;
 
+import com.mob.MobSDK;
+
 /**
  * Created by Kamh on 2018/5/29.
  * 1、application类是整个程序的入口
@@ -17,6 +19,7 @@ public class MyApplication extends Application{
     public void onCreate() {
         super.onCreate();
         sMyApplication = this;
+        MobSDK.init(this);
     }
 
     public static MyApplication getInstance(){

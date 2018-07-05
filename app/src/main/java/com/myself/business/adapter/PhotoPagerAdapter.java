@@ -55,7 +55,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
         }
         mLoader.displayImage(photoView, mData.get(position));
         container.addView(photoView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        return photoView;
+        return container;
     }
 
     @Override
