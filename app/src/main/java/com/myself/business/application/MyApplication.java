@@ -3,6 +3,7 @@ package com.myself.business.application;
 import android.app.Application;
 
 import com.mob.MobSDK;
+import com.myself.business.share.ShareManager;
 
 /**
  * Created by Kamh on 2018/5/29.
@@ -19,10 +20,13 @@ public class MyApplication extends Application{
     public void onCreate() {
         super.onCreate();
         sMyApplication = this;
-        MobSDK.init(this);
+        ShareManager.init(this);
     }
+
 
     public static MyApplication getInstance(){
         return sMyApplication;
     }
+
+
 }
