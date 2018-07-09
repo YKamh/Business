@@ -20,19 +20,22 @@ import com.myself.business.manager.UserManager;
 import com.myself.business.model.update.UpdateModel;
 import com.myself.business.network.http.RequestCenter;
 import com.myself.business.service.update.UpdateService;
+import com.myself.business.share.ShareDialog;
 import com.myself.business.util.Util;
 import com.myself.business.view.CommonDialog;
+import com.myself.business.view.MyQrodeDialog;
 import com.myself.business.view.fragment.BaseFragment;
 import com.myself.vuandroidadsdk.adutil.ImageLoaderUtil;
 import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataListener;
 
+import cn.sharesdk.framework.Platform;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by Kamh on 2018/5/29.
  */
 
-public class MineFragment extends BaseFragment implements View.OnClickListener{
+public class MineFragment extends BaseFragment implements View.OnClickListener {
 
     private View mContentView;
     private RelativeLayout mLoginLayout;
@@ -47,7 +50,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private TextView mQrCodeView;
     private TextView mUpdateView;
 
-    private LoginBroadcastReceiver mReceiver = new LoginBroadcastReceiver();;
+    private LoginBroadcastReceiver mReceiver = new LoginBroadcastReceiver();
+    ;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,7 +65,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         LocalBroadcastManager.getInstance(mContext).registerReceiver(mReceiver, intentFilter);
     }
 
-    private void unregisterBroadcast(){
+    private void unregisterBroadcast() {
         LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mReceiver);
     }
 
@@ -98,7 +102,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.video_setting_view:
                 mContext.startActivity(new Intent(mContext, SettingActivity.class));
                 break;
@@ -106,12 +110,35 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 checkVersion();
                 break;
             case R.id.login_view:
-                if (!UserManager.getInstance().hasLogined()){
+                if (!UserManager.getInstance().hasLogined()) {
                     toLogin();
                 }
+                break;
+            case R.id.share_imooc_view:
+                shareImoocToFriend();
+                break;
+            case R.id.my_qrcode_view:
+                if (!UserManager.getInstance().hasLogined()) {
+                    toLogin();
+                } else {
+                    MyQrodeDialog dialog = new MyQrodeDialog(mContext);
+                    dialog.show();
+                }
+                break;
             default:
                 break;
         }
+    }
+
+    private void shareImoocToFriend() {
+        ShareDialog dialog = new ShareDialog(mContext);
+        dialog.setShareType(Platform.SHARE_TEXT);
+        dialog.setShareTitle("慕课网");
+        dialog.setShareTitleUrl("http://www.imooc.com");
+        dialog.setShareText("慕课网");
+        dialog.setShareSite("imooc");
+        dialog.setShareSiteUrl("http://www.imooc.com");
+        dialog.show();
     }
 
     /**
@@ -123,12 +150,12 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     }
 
     //发送版本检测请求
-    private void checkVersion(){
+    private void checkVersion() {
         RequestCenter.checkVersion(new DisposeDataListener() {
             @Override
             public void onSuccess(Object responseObj) {
                 final UpdateModel updateModel = (UpdateModel) responseObj;
-                if (Util.getVersionCode(mContext) < updateModel.data.currentVersion){
+                if (Util.getVersionCode(mContext) < updateModel.data.currentVersion) {
                     CommonDialog dialog = new CommonDialog(mContext, getString(R.string.update_new_version),
                             getString(R.string.update_title), getString(R.string.update_install),
                             getString(R.string.cancel), new CommonDialog.DialogClickListener() {
@@ -139,7 +166,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                         }
                     });
                     dialog.show();
-                }else{
+                } else {
 
                 }
             }
@@ -154,7 +181,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     /**
      * 自定义广播接收器，处理登录广播
      */
-    private class LoginBroadcastReceiver extends BroadcastReceiver{
+    private class LoginBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
