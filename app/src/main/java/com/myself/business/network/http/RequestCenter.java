@@ -1,5 +1,6 @@
 package com.myself.business.network.http;
 
+import com.myself.business.model.course.BaseCourseModel;
 import com.myself.business.model.recommand.BaseRecommandModel;
 import com.myself.business.model.update.UpdateModel;
 import com.myself.business.model.user.User;
@@ -37,6 +38,12 @@ public class RequestCenter {
         params.put("mb", userName);
         params.put("pwd", password);
         RequestCenter.postRequest(HttpConstants.LOGIN, params, listener, User.class);
+    }
+
+    public static void requestCourseDetails(String courseId, DisposeDataListener listener){
+        RequestParams params = new RequestParams();
+        params.put("courseId", courseId);
+        RequestCenter.postRequest(HttpConstants.COURSE_DETAIL, params, listener, BaseCourseModel.class);
     }
 
 }
