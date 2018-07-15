@@ -4,14 +4,19 @@ import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.myself.business.R;
 import com.myself.business.activity.base.BaseActivity;
 import com.myself.business.adapter.CourseCommentAdapter;
 import com.myself.business.model.course.BaseCourseModel;
 import com.myself.business.network.http.RequestCenter;
+import com.myself.business.view.course.CourseDetailFooterView;
+import com.myself.business.view.course.CourseDetailHeaderView;
 import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataListener;
 
 /**
@@ -28,6 +33,12 @@ public class CourseDetailActivity extends BaseActivity implements View.OnClickLi
     private ImageView mBackView;
     private ListView mListView;
     private ImageView mLoadingView;
+    private RelativeLayout mBottomLayout;
+    private ImageView mJianPanView;
+    private EditText mInputEidtText;
+    private TextView mSendView;
+    private CourseDetailHeaderView headerView;
+    private CourseDetailFooterView footerView;
 
     /**
      * DATA
@@ -69,6 +80,19 @@ public class CourseDetailActivity extends BaseActivity implements View.OnClickLi
         mLoadingView.setVisibility(View.GONE);
         mListView.setVisibility(View.VISIBLE);
         mAdapter = new CourseCommentAdapter(this, mData.data.body);
+        mListView.setAdapter(mAdapter);
+
+        if (headerView != null){
+            mListView.removeHeaderView(headerView);
+        }
+        headerView = new CourseDetailHeaderView(this, mData.data.head);
+        mListView.addHeaderView(headerView);
+
+        if (footerView != null){
+            mListView.removeFooterView(footerView);
+        }
+        footerView = new CourseDetailFooterView(this, mData.data.footer);
+        mListView.addFooterView(footerView);
     }
 
     private void initView() {
