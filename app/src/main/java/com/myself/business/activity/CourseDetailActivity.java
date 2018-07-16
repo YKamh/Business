@@ -1,5 +1,6 @@
 package com.myself.business.activity;
 
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -115,5 +116,15 @@ public class CourseDetailActivity extends BaseActivity implements View.OnClickLi
             default:
                 break;
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        //更新当前的Intent
+        setIntent(intent);
+        initData();
+        initView();
+        requestDetails();
     }
 }

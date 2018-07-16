@@ -5,6 +5,8 @@ import android.app.Application;
 import com.mob.MobSDK;
 import com.myself.business.share.ShareManager;
 
+import cn.jpush.android.api.JPushInterface;
+
 /**
  * Created by Kamh on 2018/5/29.
  * 1、application类是整个程序的入口
@@ -20,9 +22,18 @@ public class MyApplication extends Application{
     public void onCreate() {
         super.onCreate();
         sMyApplication = this;
+        initShareSDK();
+        initJPush();
+    }
+
+    private void initShareSDK(){
         ShareManager.init(this);
     }
 
+    private void initJPush(){
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(this);
+    }
 
     public static MyApplication getInstance(){
         return sMyApplication;
