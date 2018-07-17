@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.mob.sdk'
 
 android {
+    buildToolsVersion "26.0.3"
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.myself.business"

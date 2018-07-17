@@ -81,7 +81,7 @@
             android:authorities="com.myself.business.DataProvider"
             android:name="cn.jpush.android.service.DataProvider"
             android:exported="true"
-            />
+            tools:replace="android:exported"/>
 
         <!-- since 1.8.0 option 可选项。用于同一设备中不同应用的JPush服务相互拉起的功能。 -->
         <!-- 若不启用该功能可删除该组件，将不拉起其他应用也不能被其他应用拉起 -->
@@ -99,8 +99,7 @@
         <provider
             android:authorities="com.myself.business.DownloadProvider"
             android:name="cn.jpush.android.service.DownloadProvider"
-            android:exported="true"
-            />
+            android:exported="true"/>
 
         <!-- Required SDK核心功能-->
         <receiver
@@ -112,7 +111,8 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.USER_PRESENT" />
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"
+                        tools:ignore="BatteryLife"/>
             </intent-filter>
             <!-- Optional -->
             <intent-filter>
@@ -184,7 +184,7 @@
                 <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" />
                 <!-- 接收网络变化 连接/断开 since 1.6.3 -->
                 <action android:name="cn.jpush.android.intent.CONNECTION" />
-                <category android:name="您应用的包名" />
+                <category android:name="com.myself.business" />
             </intent-filter>
         </receiver>
 
@@ -195,7 +195,8 @@
         <!-- 发到其他市场的 APK 可以设置为 xxx-market。 -->
         <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         <!-- Required. AppKey copied from Portal -->
-        <meta-data android:name="JPUSH_APPKEY" android:value="8fd040fcdc7ca21d25674d27"/>
+        <meta-data android:name="JPUSH_APPKEY" android:value="8fd040fcdc7ca21d25674d27"
+                   tools:replace="android:value"/>
 
     </application>
 

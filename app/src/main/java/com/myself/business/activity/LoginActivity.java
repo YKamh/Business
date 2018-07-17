@@ -12,8 +12,10 @@ import android.widget.TextView;
 
 import com.myself.business.R;
 import com.myself.business.activity.base.BaseActivity;
+import com.myself.business.jpush.PushMessageActivity;
 import com.myself.business.manager.DialogManager;
 import com.myself.business.manager.UserManager;
+import com.myself.business.model.PushMessage;
 import com.myself.business.model.user.User;
 import com.myself.business.network.http.RequestCenter;
 import com.myself.vuandroidadsdk.okhttp.listener.DisposeDataListener;
@@ -31,10 +33,17 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
     private EditText mPasswordView;
     private TextView mLoginView;
 
+    /**
+     * DATA
+     */
+    private PushMessage mPushMessage;
+    private boolean isFromPush;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
         setContentView(R.layout.activity_login_layout);
+        initData();
         initView();
     }
 
@@ -43,6 +52,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
         mPasswordView = (EditText) findViewById(R.id.login_input_password);
         mLoginView = (TextView) findViewById(R.id.login_button);
         mLoginView.setOnClickListener(this);
+    }
+
+    private void initData(){
+        Intent intent = getIntent();
+        if (intent.hasExtra("pushMessage")){
+            mPushMessage = (PushMessage) intent.getSerializableExtra("pushMessage");
+        }
+
+        isFromPush = intent.getBooleanExtra("fromPush", false);
     }
 
     @Override
@@ -69,7 +87,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
                 User user = (User) responseObj;
                 UserManager.getInstance().setUser(user);
                 sendLoginBroadcast();
-
+                //是从推送过来的
+                if (isFromPush){
+                    Intent intent = new Intent(LoginActivity.this, PushMessageActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("pushMessage", mPushMessage);
+                    startActivity(intent);
+                }
             }
 
             @Override
