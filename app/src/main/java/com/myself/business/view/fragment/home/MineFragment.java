@@ -1,5 +1,6 @@
 package com.myself.business.view.fragment.home;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -107,7 +108,13 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
                 mContext.startActivity(new Intent(mContext, SettingActivity.class));
                 break;
             case R.id.update_view:
-                checkVersion();
+                if (hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                    //拥有了写SDCard的权限，那么直接执行业务逻辑
+                    checkVersion();
+                }else{
+                    requestPermission(EXTERNAL_STORAGE_PERMISSION, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE});
+                }
+//                checkVersion();
                 break;
             case R.id.login_view:
                 if (!UserManager.getInstance().hasLogined()) {
@@ -202,5 +209,10 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         unregisterBroadcast();
+    }
+
+    @Override
+    public void doSDCard() {
+        checkVersion();
     }
 }
