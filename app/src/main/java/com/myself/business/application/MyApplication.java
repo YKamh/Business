@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.mob.MobSDK;
 import com.myself.business.share.ShareManager;
+import com.umeng.analytics.MobclickAgent;
 
 import cn.jpush.android.api.JPushInterface;
 
@@ -39,5 +40,8 @@ public class MyApplication extends Application{
         return sMyApplication;
     }
 
-
+    public void initUMeng(){
+        MobclickAgent.setDebugMode(true);
+        MobclickAgent.openActivityDurationTrack(false);
+    }
 }

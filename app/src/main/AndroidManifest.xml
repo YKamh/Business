@@ -36,6 +36,14 @@
         <!--二维码相关-->
         <activity android:name=".zxing.app.CaptureActivity"/>
 
+        <!-- 友盟统计相关meta-data -->
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="5b51ebb5f29d983c720002ed" />
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="${UMENG_CHANNEL_VALUE}" />
+
     </application>
 
 </manifest>
