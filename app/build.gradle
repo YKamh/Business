@@ -10,24 +10,65 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
+        flavorDimensions "versionCode"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
             //选择要添加的对应cpu类型的.so库。
-            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a','x86', 'x86_64', 'mips', 'mips64'
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
             // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
         }
 
         manifestPlaceholders = [
-                JPUSH_PKGNAME : applicationId,
+                JPUSH_PKGNAME: applicationId,
                 JPUSH_APPKEY : "8fd040fcdc7ca21d25674d27", //JPush上注册的包名对应的appkey.
-                JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
+                JPUSH_CHANNEL: "developer-default", //暂时填写默认值即可.
+                UMENG_CHANNEL_VALUE: "kamh" //友盟
         ]
     }
+
+    signingConfigs {
+        debug {}
+
+        release {
+            storeFile file("mykey.jks")
+            storePassword "123456"
+            keyAlias "kamh"
+            keyPassword "123456"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+
+            //指定我们release包的输出文件名就是我们的渠道名字
+            applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "driver_${variant.productFlavors[0].name}_v${variant.versionName}.apk"
+                }
+            }
+        }
+        debug {}
+    }
+
+    productFlavors {
+        kamh {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE : "kamh"]
+        }
+
+        googleplayer {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE : "googleplayer"]
+        }
+
+        baidu {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE : "baidu"]
+        }
+
+        productFlavors.all {
+            flavor -> flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
         }
     }
 }
@@ -81,3 +122,5 @@ MobSDK {
         }
     }
 }
+
+

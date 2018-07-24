@@ -25,6 +25,7 @@ public class MyApplication extends Application{
         sMyApplication = this;
         initShareSDK();
         initJPush();
+        initUMeng();
     }
 
     private void initShareSDK(){
